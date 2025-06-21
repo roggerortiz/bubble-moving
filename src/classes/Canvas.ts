@@ -1,4 +1,4 @@
-import { DEFAULT_RADIUS, MAX_SPEED, MIN_SPEED } from '../helpers/constants'
+import { DEFAULT_RADIUS, MAX_BUBBLE_COUNT, MAX_SPEED, MIN_BUBBLE_COUNT, MIN_SPEED } from '../helpers/constants'
 import { getRandomBoolean, getRandomColor, getRandomNumber, isCollisionWithOtherBubble } from '../helpers/utils'
 import { Bubble } from './Bubble'
 
@@ -37,28 +37,32 @@ export class Canvas {
   }
 
   addBubble() {
-    const minPosition = DEFAULT_RADIUS + 1
-    const maxPositionX = this.width - DEFAULT_RADIUS - 1
-    const maxPositionY = this.height - DEFAULT_RADIUS - 1
+    if (this.bubbles.length < MAX_BUBBLE_COUNT) {
+      const minPosition = DEFAULT_RADIUS + 1
+      const maxPositionX = this.width - DEFAULT_RADIUS - 1
+      const maxPositionY = this.height - DEFAULT_RADIUS - 1
 
-    const bubble = new Bubble({
-      color: getRandomColor(),
-      positionX: getRandomNumber(minPosition, maxPositionX),
-      positionY: getRandomNumber(minPosition, maxPositionY),
-      directionX: getRandomBoolean() ? 1 : -1,
-      directionY: getRandomBoolean() ? 1 : -1
-    })
+      const bubble = new Bubble({
+        color: getRandomColor(),
+        positionX: getRandomNumber(minPosition, maxPositionX),
+        positionY: getRandomNumber(minPosition, maxPositionY),
+        directionX: getRandomBoolean() ? 1 : -1,
+        directionY: getRandomBoolean() ? 1 : -1
+      })
 
-    while (isCollisionWithOtherBubble(bubble, this.bubbles)) {
-      bubble.positionX = getRandomNumber(minPosition, maxPositionX)
-      bubble.positionY = getRandomNumber(minPosition, maxPositionY)
+      while (isCollisionWithOtherBubble(bubble, this.bubbles)) {
+        bubble.positionX = getRandomNumber(minPosition, maxPositionX)
+        bubble.positionY = getRandomNumber(minPosition, maxPositionY)
+      }
+
+      this.bubbles.push(bubble)
     }
-
-    this.bubbles.push(bubble)
   }
 
   removeBubble() {
-    this.bubbles.pop()
+    if (this.bubbles.length > MIN_BUBBLE_COUNT) {
+      this.bubbles.pop()
+    }
   }
 
   detectCollisions() {
