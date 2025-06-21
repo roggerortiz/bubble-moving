@@ -1,60 +1,26 @@
 <script lang="ts">
   import { Canvas } from './classes/Canvas'
   import Keys from './components/keys.svelte'
-  import {
-    COLOR_KEYS,
-    DEFAULT_RADIUS,
-    DOWN_KEYS,
-    LEFT_KEYS,
-    MAX_RADIUS,
-    MIN_RADIUS,
-    MINUS_KEY,
-    PAUSE_KEYS,
-    PLUS_KEY,
-    RIGHT_KEYS,
-    UP_KEYS
-  } from './helpers/constants'
-  import { getRandomColor } from './helpers/utils'
-  import { defaultPressed, type Pressed } from './types/pressed'
+  import { MINUS_KEY, PLUS_KEY, SPACE_BAR_KEY, X_KEY, Z_KEY } from './helpers/constants'
 
   let canvas: Canvas = $state(new Canvas())
-  let pressed: Pressed = $state(defaultPressed)
-  let color: string = $state(getRandomColor())
-  let radius: number = $state(DEFAULT_RADIUS)
+  let pause: boolean = $state(false)
 
   const onKeyDown = ({ key }: KeyboardEvent) => {
-    if (key === PLUS_KEY && radius < MAX_RADIUS) {
-      radius++
-    } else if (key === MINUS_KEY && radius > MIN_RADIUS) {
-      radius--
-    } else if (COLOR_KEYS.includes(key)) {
-      color = getRandomColor()
-    } else if (UP_KEYS.includes(key)) {
-      pressed.up = true
-    } else if (DOWN_KEYS.includes(key)) {
-      pressed.down = true
-    } else if (LEFT_KEYS.includes(key)) {
-      pressed.left = true
-    } else if (RIGHT_KEYS.includes(key)) {
-      pressed.right = true
-    } else if (PAUSE_KEYS.includes(key)) {
-      pressed.pause = !pressed.pause
+    if (key === Z_KEY) {
+      canvas.addBubble()
+    } else if (key === X_KEY) {
+      canvas.removeBubble()
+    } else if (key === PLUS_KEY) {
+      canvas.speedUp()
+    } else if (key === MINUS_KEY) {
+      canvas.speedDown()
+    } else if (key === SPACE_BAR_KEY) {
+      pause = !pause
 
-      if (!pressed.pause) {
+      if (!pause) {
         draw()
       }
-    }
-  }
-
-  const onKeyUp = ({ key }: KeyboardEvent) => {
-    if (UP_KEYS.includes(key)) {
-      pressed.up = false
-    } else if (DOWN_KEYS.includes(key)) {
-      pressed.down = false
-    } else if (LEFT_KEYS.includes(key)) {
-      pressed.left = false
-    } else if (RIGHT_KEYS.includes(key)) {
-      pressed.right = false
     }
   }
 
@@ -65,9 +31,10 @@
 
   const draw = () => {
     canvas.clear()
-    canvas.draw({ color, radius }, pressed)
+    canvas.detectCollisions()
+    canvas.draw()
 
-    if (!pressed.pause) {
+    if (!pause) {
       window.requestAnimationFrame(draw)
     }
   }
@@ -83,5 +50,4 @@
 <svelte:window
   on:load|preventDefault={onLoad}
   on:keydown|capture={onKeyDown}
-  on:keyup|capture={onKeyUp}
 />
