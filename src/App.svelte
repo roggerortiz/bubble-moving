@@ -5,19 +5,13 @@
 
   let canvas: Canvas = $state(new Canvas())
   let pause: boolean = $state(false)
-  let inputEl: HTMLInputElement
 
   onMount(() => {
-    autofocus()
     canvas = new Canvas()
     draw()
   })
 
-  const onKeyDown = (event: KeyboardEvent) => {
-    event.preventDefault()
-
-    const { key } = event
-
+  const onKeyDown = ({ key }: KeyboardEvent) => {
     if (key === N_KEY) {
       canvas.addBubble()
     } else if (key === X_KEY) {
@@ -35,10 +29,6 @@
     }
   }
 
-  const autofocus = () => {
-    inputEl.focus()
-  }
-
   const draw = () => {
     canvas.clear()
     canvas.detectCollisions()
@@ -52,14 +42,11 @@
 
 <main class="w-full md:w-10/12 xl:w-8/12 bg-zinc-950 border border-gray-700 rounded overflow-hidden mx-4 md:m-0">
   <canvas class="w-full"></canvas>
-  <div class="flex flex-wrap gap-x-2 bg-zinc-950 border-t border-gray-700">
-    <input
-      readonly
-      bind:this={inputEl}
-      class="w-full outline-0 text-gray-400 text-sm px-4 py-2 caret-transparent"
-      value="Pause : [ ]  Speed : [+] / [-]  Bubble : [N] / [X]"
-      onkeydown={onKeyDown}
-      onblur={autofocus}
-    />
+  <div class="flex flex-wrap gap-x-2 bg-zinc-950 border-t border-gray-700 text-gray-400 text-sm px-4 py-2">
+    <span>Pause : [ ]</span>
+    <span>Speed : [+] / [-]</span>
+    <span>Bubble : [N] / [X]</span>
   </div>
 </main>
+
+<svelte:window on:keydown|capture={onKeyDown} />
