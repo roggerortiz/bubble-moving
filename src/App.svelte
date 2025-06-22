@@ -1,12 +1,24 @@
 <script lang="ts">
+  import { onMount } from 'svelte'
   import { Canvas } from './classes/Canvas'
-  import { MINUS_KEY, PLUS_KEY, SPACE_BAR_KEY, X_KEY, Z_KEY } from './helpers/constants'
+  import { MINUS_KEY, N_KEY, PLUS_KEY, SPACE_BAR_KEY, X_KEY } from './helpers/constants'
 
   let canvas: Canvas = $state(new Canvas())
   let pause: boolean = $state(false)
+  let inputEl: HTMLInputElement
 
-  const onKeyDown = ({ key }: KeyboardEvent) => {
-    if (key === Z_KEY) {
+  onMount(() => {
+    autofocus()
+    canvas = new Canvas()
+    draw()
+  })
+
+  const onKeyDown = (event: KeyboardEvent) => {
+    event.preventDefault()
+
+    const { key } = event
+
+    if (key === N_KEY) {
       canvas.addBubble()
     } else if (key === X_KEY) {
       canvas.removeBubble()
@@ -23,9 +35,8 @@
     }
   }
 
-  const onLoad = () => {
-    canvas = new Canvas()
-    draw()
+  const autofocus = () => {
+    inputEl.focus()
   }
 
   const draw = () => {
@@ -43,13 +54,12 @@
   <canvas class="w-full"></canvas>
   <div class="flex flex-wrap gap-x-2 bg-zinc-950 border-t border-gray-700">
     <input
+      readonly
+      bind:this={inputEl}
       class="w-full outline-0 text-gray-400 text-sm px-4 py-2 caret-transparent"
       value="Pause : [ ]  Speed : [+] / [-]  Bubble : [N] / [X]"
+      onkeydown={onKeyDown}
+      onblur={autofocus}
     />
   </div>
 </main>
-
-<svelte:window
-  on:load|preventDefault={onLoad}
-  on:keydown|capture={onKeyDown}
-/>

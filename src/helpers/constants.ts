@@ -12,5 +12,5 @@ export const MIN_BUBBLE_COUNT: number = 1
 export const SPACE_BAR_KEY: string = ' '
 export const PLUS_KEY: string = '+'
 export const MINUS_KEY: string = '-'
-export const Z_KEY: string = 'z'
+export const N_KEY: string = 'n'
 export const X_KEY: string = 'x'
